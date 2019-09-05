@@ -96,8 +96,11 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 
 			unset( $_tribe_data['@context'] );
 
-			$_tribe_data['image'] = get_the_post_thumbnail_url( get_the_ID(), 'full' );
-			$data[]               = $_tribe_data;
+			if ( has_post_thumbnail( $post->ID ) ) {
+				$_tribe_data['image'] = get_the_post_thumbnail_url( get_the_ID(), 'full' );
+			}
+
+			$data[] = $_tribe_data;
 		}
 
 		return $data;
