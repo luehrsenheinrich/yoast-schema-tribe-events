@@ -65,7 +65,7 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 	 */
 	public function generate() {
 		global $post;
-		$data = array();
+		$data = null;
 
 		$args       = array();
 		$tribe_data = Tribe__Events__JSON_LD__Event::instance()->get_data( $post );
@@ -100,7 +100,7 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 				$_tribe_data['image'] = get_the_post_thumbnail_url( get_the_ID(), 'full' );
 			}
 
-			$data[] = $_tribe_data;
+			$data = $_tribe_data;
 		}
 
 		return $data;
