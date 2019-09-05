@@ -1,8 +1,8 @@
 {
   "version": "0.1.0",
-  "title": "Yoast Schema for The Events Calendar",
-  "name": "wpmyte-plugin",
-  "slug": "wpmyte-plugin",
+  "title": "Yoast Schema for The Events Calendar by WP Munich",
+  "name": "wpmyte",
+  "slug": "wpmyte",
   "author": "Luehrsen // Heinrich",
   "authorUrl": "https://www.luehrsen-heinrich.de",
   "description": "This plugin disables the schema output of the The Events Calendar plugin and injects it into the YOAST generated schema.",
