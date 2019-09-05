@@ -59,7 +59,7 @@
     "setup": "sh bin/setup-local-env.sh",
     "dev": "sh bin/setup-local-env.sh && grunt watch",
     "remove": "docker-compose down --volumes --remove-orphans",
-    "release": "env-cmd .env release-it",
+    "release": "env-cmd -f .env release-it",
     "rename": "node bin/rename-slug.js"
   },
   "browserslist": [
