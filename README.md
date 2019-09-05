@@ -1,4 +1,5 @@
 # Yoast Schema for The Events Calendar by WP Munich
+[![Build Status](https://travis-ci.com/luehrsenheinrich/yoast-schema-tribe-events.svg?branch=master)](https://travis-ci.com/luehrsenheinrich/yoast-schema-tribe-events)
 
 This plugin serves as a connector between [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/)
 and [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/).
