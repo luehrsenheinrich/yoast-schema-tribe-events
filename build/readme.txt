@@ -16,14 +16,14 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 == Installation ==
 ## From within WordPress
 
-1. Visit \'Plugins > Add New\'
-1. Search for \'XXXX\'
+1. Visit 'Plugins > Add New'
+1. Search for '<%= pkg.title %>'
 1. Activate the pluginfrom your Plugins page.
 
 ## Manually
 
-1. Upload the `xxxx` folder to the `/wp-content/plugins/` directory
-1. Activate the plugin through the \'Plugins\' menu in WordPress
+1. Upload the '<%= pkg.slug %>' folder to the `/wp-content/plugins/` directory
+1. Activate '<%= pkg.title %>' through the 'Plugins' menu in WordPress
 
 == Changelog ==
 
