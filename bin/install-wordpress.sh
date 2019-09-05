@@ -44,6 +44,12 @@ if ! $(${WP_CLI} core is-installed); then
 	# Import and activate needed plugins
 	${WP_CLI} plugin install gutenberg wordpress-importer query-monitor debug-bar wordpress-seo the-events-calendar --activate
 
+	echo $(status_message "Downloading event test data (thanks to Eventfabrik München!)...")
+	${WP_CLI} curl -O https://raw.githubusercontent.com/luehrsenheinrich/yoast-schema-tribe-events/master/democontent.xml >/dev/null 2>&1
+
+	echo $(status_message "Importing event test data...\n")
+	${WP_CLI} import democontent.xml --authors=create
+
 	# Activate debugging
 	${WP_CLI} config set WP_DEBUG true --raw
 
