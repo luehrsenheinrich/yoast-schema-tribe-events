@@ -1,16 +1,16 @@
 <?php
 /**
- * The main file of the <##= pkg.title ##> plugin
+ * The main file of the <%= pkg.title %> plugin
  *
  * @package wpmyte
- * @version <##= pkg.version ##>
+ * @version <%= pkg.version %>
  *
- * Plugin Name: <##= pkg.title ##>
- * Plugin URI: <##= pkg.pluginUrl ##>
- * Description: <##= pkg.description ##>
- * Author: <##= pkg.author ##>
- * Author URI: <##= pkg.authorUrl ##>
- * Version: <##= pkg.version ##>
+ * Plugin Name: <%= pkg.title %>
+ * Plugin URI: <%= pkg.pluginUrl %>
+ * Description: <%= pkg.description %>
+ * Author: <%= pkg.author %>
+ * Author URI: <%= pkg.authorUrl %>
+ * Version: <%= pkg.version %>
  * Text Domain: wpmyte
  */
 

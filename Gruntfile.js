@@ -107,8 +107,7 @@ module.exports = function( grunt ) {
 					if ( typeof content !== 'string' ) {
 						return content;
 					}
-					grunt.template.addDelimiters( 'custom-delimiters', '<##', '##>' );
-					return grunt.template.process( content, { delimiters: 'custom-delimiters' } );
+					return grunt.template.process( content );
 				},
 			},
 			build: { expand: true, cwd: 'build', src: [ 'style.css', '**/*.txt', '**/*.svg', '**/*.po', '**/*.pot', '**/*.tmpl.html', '**/*.php' ], dest: 'trunk/', filter: 'isFile' },
