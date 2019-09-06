@@ -8,6 +8,7 @@
 namespace wpmyte\Schema_Filter;
 use wpmyte\Component_Interface;
 use wpmyte\Yoast_Event_Schema;
+use Tribe__Events__Template__Month;
 use function add_filter;
 use is_plugin_active;
 
@@ -43,6 +44,20 @@ class Component implements Component_Interface {
 		add_filter( 'tribe_events_widget_jsonld_enabled', '__return_false', PHP_INT_MAX, 1 );
 		add_filter( 'tribe_json_ld_markup', '__return_empty_string', PHP_INT_MAX, 1 );
 		add_filter( 'wpseo_schema_graph_pieces', array( $this, 'add_graph_pieces' ), 11, 2 );
+
+		add_action( 'wp_head', array( $this, 'unset_tec_json_ld_markup' ), 0 );
+	}
+
+	/**
+	 * The lack of filters and actions makes it hard to unset the json-ld output,
+	 * so we have to use this hack to suppress the json output from TEC.
+	 */
+	function unset_tec_json_ld_markup() {
+		foreach ( $GLOBALS['wp_filter']['wp_head'][10] as $a ) {
+			if ( $a['function'][0] instanceof Tribe__Events__Template__Month && $a['function'][1] === 'json_ld_markup' ) {
+				remove_action( 'wp_head', array( $a['function'][0], 'json_ld_markup' ) );
+			}
+		}
 	}
 
 	/**
