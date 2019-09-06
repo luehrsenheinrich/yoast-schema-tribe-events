@@ -9,6 +9,7 @@ namespace wpmyte\Yoast_Event_Schema;
 use wpmyte\Component_Interface;
 use WPSEO_Graph_Piece;
 use WPSEO_Schema_Context;
+use WPSEO_Schema_Image;
 use Tribe__Events__JSON_LD__Event;
 use function load_plugin_textdomain;
 
@@ -54,25 +55,70 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 	public function is_needed() {
 		if ( is_single() && 'tribe_events' === get_post_type() ) {
 			return true;
+		} elseif ( is_post_type_archive( 'tribe_events' ) ) {
+			return true;
 		}
 
 		return false;
 	}
 	/**
 	 * Adds our Event piece of the graph.
+	 * Partially lifted from the 'Tribe__JSON_LD__Abstract' class.
 	 *
+	 * @see https://docs.theeventscalendar.com/reference/classes/tribe__json_ld__abstract/
 	 * @return array $graph Event Schema markup
 	 */
 	public function generate() {
-		global $post;
-		$data = null;
+		$posts = array();
 
-		$args       = array();
-		$tribe_data = Tribe__Events__JSON_LD__Event::instance()->get_data( $post );
+		if ( is_singular( 'tribe_events' ) ) {
+			global $post;
+			$posts[] = $post;
+		} elseif (
+			is_post_type_archive( 'tribe_events' )
+			&& ! is_tax()
+		) {
+			global $wp_query;
+			$posts = $wp_query->posts;
+		}
+
+		$tribe_data = $this->get_tribe_schema( $posts );
+		$tribe_data = $this->transform_tribe_schema( $tribe_data );
+
+		$data = array();
+		foreach ( $tribe_data as $t ) {
+			// Cast the schema object as array, the Yoast Class can't handle objects.
+			$data[] = (array) $t;
+		}
+
+		// If the resulting array only has one entry, print it directly.
+		if ( count( $data ) === 1 ) {
+			$data = $data[0];
+		} elseif ( count( $data ) === 0 ) {
+			$data = false;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get and return the schema markup for a collection of posts.
+	 * If the posts array is empty, only the current post is returned.
+	 *
+	 * @param  array $posts The collection of posts we want schema markup for.
+	 *
+	 * @return array        The tribe schema for these posts.
+	 */
+	private function get_tribe_schema( array $posts = [] ) {
+		$args       = array(
+			// We do not want the @context to be shown.
+			'context' => false,
+		);
+		$tribe_data = Tribe__Events__JSON_LD__Event::instance()->get_data( $posts, $args );
 		$type       = strtolower( esc_attr( Tribe__Events__JSON_LD__Event::instance()->type ) );
-		Tribe__Events__JSON_LD__Event::instance()->set_type( $post, $type );
 
 		foreach ( $tribe_data as $post_id => $_data ) {
+			Tribe__Events__JSON_LD__Event::instance()->set_type( $post_id, $type );
 			// Register this post as done already.
 			Tribe__Events__JSON_LD__Event::instance()->register( $post_id );
 		}
@@ -86,23 +132,45 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		 * @param array $data objects representing the Google Markup for each event.
 		 * @param array $args the arguments used to get data
 		 */
-		$tribe_data = apply_filters( "tribe_json_ld_{$type}_data", $tribe_data, $args );
+		$tribe_data = apply_filters( "wpmyte_json_ld_{$type}_data", $tribe_data, $args );
 
-		// Strip the post ID indexing before returning.
-		$tribe_data = array_values( $tribe_data );
+		return $tribe_data;
+	}
 
-		if ( count( $tribe_data ) > 0 ) {
-			$_tribe_data = (array) $tribe_data[0];
+	/**
+	 * Transform the tribe schema markup and adapt it to the Yoast SEO standard.
+	 *
+	 * @param  array $data The data retrieved from the TEC plugin.
+	 *
+	 * @return array       The transformed event data.
+	 */
+	private function transform_tribe_schema( array $data = [] ) {
+		$new_data = array();
 
-			unset( $_tribe_data['@context'] );
+		foreach ( $data as $post_id => $d ) {
 
-			if ( has_post_thumbnail( $post->ID ) ) {
-				$_tribe_data['image'] = get_the_post_thumbnail_url( get_the_ID(), 'full' );
+			// Generate an @id for the event.
+			$d->{'@id'} = get_permalink( $post_id ) . '#' . strtolower( esc_attr( $d->{'@type'} ) );
+
+			// Transform the post_thumbnail from the url to the @id of #primaryimage.
+			if ( has_post_thumbnail( $post_id ) ) {
+				if ( is_single() && false ) {
+					// On a single view we can assume that Yoast SEO already printed the
+					// image schema for the post thumbnail.
+					$d->image = (object) [
+						'@id' => get_permalink( $post_id ) . '#primaryimage',
+					];
+				} else {
+					$image_id     = get_post_thumbnail_id( $post_id );
+					$schema_id    = get_permalink( $post_id ) . '#primaryimage';
+					$schema_image = new WPSEO_Schema_Image( $schema_id );
+					$d->image     = $schema_image->generate_from_attachment_id( $image_id );
+				}
 			}
 
-			$data = $_tribe_data;
+			$new_data[ $post_id ] = $d;
 		}
 
-		return $data;
+		return $new_data;
 	}
 }
