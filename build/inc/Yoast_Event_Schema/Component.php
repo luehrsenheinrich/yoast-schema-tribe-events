@@ -76,7 +76,7 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 			$posts[] = $post;
 		} elseif (
 			is_post_type_archive( 'tribe_events' )
-			&& ! is_tax()
+			&& ! is_tax( 'tribe_events_cat' )
 		) {
 			global $wp_query;
 			$posts = $wp_query->posts;
