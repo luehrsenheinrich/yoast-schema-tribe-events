@@ -40,8 +40,8 @@ class Component implements Component_Interface {
 	 */
 	public function initialize() {
 		// Disable the default schema of The Events Calendar.
-		add_filter( 'tribe_events_widget_jsonld_enabled', '__return_false', 100, 1 );
-		add_filter( 'tribe_json_ld_markup', '__return_empty_string', 100, 1 );
+		add_filter( 'tribe_events_widget_jsonld_enabled', '__return_false', PHP_INT_MAX, 1 );
+		add_filter( 'tribe_json_ld_markup', '__return_empty_string', PHP_INT_MAX, 1 );
 		add_filter( 'wpseo_schema_graph_pieces', array( $this, 'add_graph_pieces' ), 11, 2 );
 	}
 

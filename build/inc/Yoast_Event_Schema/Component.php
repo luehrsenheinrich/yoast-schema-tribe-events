@@ -11,6 +11,7 @@ use WPSEO_Graph_Piece;
 use WPSEO_Schema_Context;
 use WPSEO_Schema_Image;
 use Tribe__Events__JSON_LD__Event;
+use Tribe__Events__Template__Month;
 use function load_plugin_textdomain;
 
 /**
@@ -54,8 +55,10 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 	 */
 	public function is_needed() {
 		if ( is_single() && 'tribe_events' === get_post_type() ) {
+			// The single event view.
 			return true;
-		} elseif ( is_post_type_archive( 'tribe_events' ) ) {
+		} elseif ( tribe_is_month() ) {
+			// The month event view.
 			return true;
 		}
 
@@ -75,11 +78,25 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 			global $post;
 			$posts[] = $post;
 		} elseif (
-			is_post_type_archive( 'tribe_events' )
-			&& ! is_tax( 'tribe_events_cat' )
+			tribe_is_month()
 		) {
-			global $wp_query;
-			$posts = $wp_query->posts;
+			$wp_query = tribe_get_global_query_object();
+
+			$event_date = $wp_query->get( 'eventDate' );
+
+			$month = empty( $event_date )
+				? tribe_get_month_view_date()
+				: $wp_query->get( 'eventDate' );
+
+			$args = [
+				'eventDisplay'   => 'custom',
+				'start_date'     => Tribe__Events__Template__Month::calculate_first_cell_date( $month ),
+				'end_date'       => Tribe__Events__Template__Month::calculate_final_cell_date( $month ),
+				'posts_per_page' => -1,
+				'hide_upcoming'  => true,
+			];
+
+			$posts = tribe_get_events( $args );
 		}
 
 		$tribe_data = $this->get_tribe_schema( $posts );
