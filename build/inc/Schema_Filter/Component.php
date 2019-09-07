@@ -53,8 +53,11 @@ class Component implements Component_Interface {
 	 * so we have to use this hack to suppress the json output from TEC.
 	 */
 	function unset_tec_json_ld_markup() {
+		// We cycle through every filter registered to wp_head with prio 10.
 		foreach ( $GLOBALS['wp_filter']['wp_head'][10] as $a ) {
+			// If we find an instance of the fitting class with the fitting action.
 			if ( $a['function'][0] instanceof Tribe__Events__Template__Month && $a['function'][1] === 'json_ld_markup' ) {
+				// We nuke it.
 				remove_action( 'wp_head', array( $a['function'][0], 'json_ld_markup' ) );
 			}
 		}

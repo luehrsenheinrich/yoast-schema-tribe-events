@@ -27,6 +27,10 @@ if ( ! defined( 'WPMYTE_PLUGIN_VERSION' ) ) {
 	define( 'WPMYTE_PLUGIN_VERSION', '<%= pkg.version %>' );
 }
 
+if ( ! defined( 'WPMYTE_PLUGIN_NAME' ) ) {
+	define( 'WPMYTE_PLUGIN_NAME', '<%= pkg.title %>' );
+}
+
 if ( ! defined( 'WPMYTE_PLUGIN_URL' ) ) {
 	define( 'WPMYTE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }

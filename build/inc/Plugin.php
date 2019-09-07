@@ -131,6 +131,7 @@ class Plugin {
 		$components = array(
 			new Schema_Filter\Component(),
 			new i18n\Component(),
+			new Debug_Mark\Component(),
 		);
 
 		return $components;
