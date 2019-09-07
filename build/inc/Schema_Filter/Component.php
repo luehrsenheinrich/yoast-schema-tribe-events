@@ -10,7 +10,9 @@ use wpmyte\Component_Interface;
 use wpmyte\Yoast_Event_Schema;
 use Tribe__Events__Template__Month;
 use function add_filter;
-use is_plugin_active;
+use function is_plugin_active;
+use function add_action;
+use function remove_action;
 
 /**
  * A class to handle textdomains and other schema filter related logic..
