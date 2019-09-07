@@ -6,7 +6,7 @@
 	"npm": {
 		"publish": false
 	},
-	"scripts": {
-		"beforeStage": "npx grunt release"
+	"hooks": {
+		"after:bump": "npx grunt release"
 	}
 }
