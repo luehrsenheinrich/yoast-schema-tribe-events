@@ -38,7 +38,7 @@ class Component implements Component_Interface {
 	public function add_debug_mark() {
 		echo sprintf(
 			'<!-- The Schema has been enhanced with %1$s %2$s -->',
-			WPMYTE_PLUGIN_NAME,
+			str_replace( '&amp;', '&', esc_html( WPMYTE_PLUGIN_NAME ) ),
 			'v' . WPMYTE_PLUGIN_VERSION
 		);
 	}
