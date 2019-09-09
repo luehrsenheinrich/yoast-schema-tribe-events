@@ -132,6 +132,7 @@ class Plugin {
 			new Schema_Filter\Component(),
 			new i18n\Component(),
 			new Debug_Mark\Component(),
+			new TEC_Settings\Component(),
 		);
 
 		return $components;

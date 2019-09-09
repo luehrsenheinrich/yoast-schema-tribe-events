@@ -28,7 +28,7 @@ if ( ! defined( 'WPMYTE_PLUGIN_VERSION' ) ) {
 }
 
 if ( ! defined( 'WPMYTE_PLUGIN_NAME' ) ) {
-	define( 'WPMYTE_PLUGIN_NAME', '<%= pkg.title %>' );
+	define( 'WPMYTE_PLUGIN_NAME', __( '<%= pkg.title %>', 'wpmyte' ) );
 }
 
 if ( ! defined( 'WPMYTE_PLUGIN_URL' ) ) {
