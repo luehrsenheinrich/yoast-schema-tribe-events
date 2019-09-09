@@ -91,11 +91,13 @@ class Component implements Component_Interface {
 			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 			$is_activated = is_plugin_active( $plugin );
 
-			if ( $is_activated ) {
-				return true;
+			if ( ! $is_activated ) {
+				// We can drop out if at least one required plugin is not activated.
+				return false;
 			}
 		}
 
-		return false;
+		// All required plugins are activated as this function would drop out returning false otherwise.
+		return true;
 	}
 }
