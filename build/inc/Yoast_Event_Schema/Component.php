@@ -54,11 +54,15 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 	 * @return bool
 	 */
 	public function is_needed() {
+
 		if ( is_single() && 'tribe_events' === get_post_type() ) {
 			// The single event view.
 			return true;
 		} elseif ( tribe_is_month() ) {
 			// The month event view.
+			return true;
+		} elseif ( is_front_page() && tribe_get_option( 'wpmyteOutputSchemaOnFrontpage' ) ) {
+			// The frontpage.
 			return true;
 		}
 
@@ -80,23 +84,12 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		} elseif (
 			tribe_is_month()
 		) {
-			$wp_query = tribe_get_global_query_object();
-
-			$event_date = $wp_query->get( 'eventDate' );
-
-			$month = empty( $event_date )
-				? tribe_get_month_view_date()
-				: $wp_query->get( 'eventDate' );
-
-			$args = [
-				'eventDisplay'   => 'custom',
-				'start_date'     => Tribe__Events__Template__Month::calculate_first_cell_date( $month ),
-				'end_date'       => Tribe__Events__Template__Month::calculate_final_cell_date( $month ),
-				'posts_per_page' => -1,
-				'hide_upcoming'  => true,
-			];
-
-			$posts = tribe_get_events( $args );
+			$posts = $this->get_month_events();
+		} elseif (
+			is_front_page()
+			&& tribe_get_option( 'wpmyteOutputSchemaOnFrontpage' )
+		) {
+			$posts = $this->get_upcoming_events();
 		}
 
 		$tribe_data = $this->get_tribe_schema( $posts );
@@ -189,5 +182,50 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		}
 
 		return $new_data;
+	}
+
+	/**
+	 * Get an array of events for the requested month.
+	 *
+	 * @return array An array of posts of the custom post type event.
+	 */
+	private function get_month_events() {
+		$wp_query = tribe_get_global_query_object();
+
+		$event_date = $wp_query->get( 'eventDate' );
+
+		$month = empty( $event_date )
+			? tribe_get_month_view_date()
+			: $wp_query->get( 'eventDate' );
+
+		$args = [
+			'eventDisplay'   => 'custom',
+			'start_date'     => Tribe__Events__Template__Month::calculate_first_cell_date( $month ),
+			'end_date'       => Tribe__Events__Template__Month::calculate_final_cell_date( $month ),
+			'posts_per_page' => -1,
+			'hide_upcoming'  => true,
+		];
+
+		$posts = tribe_get_events( $args );
+
+		return $posts;
+	}
+
+	/**
+	 * Get an array of events that are upcoming.
+	 *
+	 * @return array An array of posts of the custom post type event.
+	 */
+	private function get_upcoming_events() {
+		$args = [
+			'eventDisplay'   => 'custom',
+			'start_date'     => 'now',
+			'posts_per_page' => tribe_get_option( 'wpmyteEventsOnFrontpage', get_option( 'posts_per_page' ) ),
+			'hide_upcoming'  => true,
+		];
+
+		$posts = tribe_get_events( $args );
+
+		return $posts;
 	}
 }
