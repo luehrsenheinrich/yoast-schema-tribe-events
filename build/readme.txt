@@ -34,5 +34,7 @@ to the development of this plugin [on GitHub](https://github.com/luehrsenheinric
 
 == Changelog ==
 
+A more detailed changelog can be [found on GitHub](https://github.com/luehrsenheinrich/yoast-schema-tribe-events/releases).
+
 = 0.0.1 =
 * Initial release
