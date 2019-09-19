@@ -1,5 +1,5 @@
 {
-  "version": "0.3.2",
+  "version": "1.0.0",
   "title": "Schema Glue for Yoast & The Events Calendar by WP Munich",
   "name": "wpmyte",
   "slug": "wpmyte",
@@ -61,7 +61,7 @@
     "remove": "docker-compose down --volumes --remove-orphans",
     "release": "env-cmd -f .env release-it",
     "rename": "node bin/rename-slug.js",
-		"release-wp": "sh bin/wp-repo-release.sh update/wpmyte.zip wpmyte"
+    "release-wp": "sh bin/wp-repo-release.sh update/wpmyte.zip wpmyte"
   },
   "browserslist": [
     "> 1%",
