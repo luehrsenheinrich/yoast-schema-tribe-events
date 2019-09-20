@@ -20,6 +20,11 @@ If you are a developer, we encourage you to follow along or
 [contribute](https://github.com/luehrsenheinrich/yoast-schema-tribe-events)
 to the development of this plugin [on GitHub](https://github.com/luehrsenheinrich/yoast-schema-tribe-events).
 
+## Features
+
+* Integrates the Event Schema from "The Events Calendar" into the standard of Yoast SEO.
+* Adds the ability to display Event Schema on the frontpage. (See the settings in "The Events Calendar")
+
 == Installation ==
 ## From within WordPress
 
