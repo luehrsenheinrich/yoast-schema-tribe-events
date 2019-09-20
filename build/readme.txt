@@ -37,6 +37,10 @@ to the development of this plugin [on GitHub](https://github.com/luehrsenheinric
 1. Upload the '<%= pkg.slug %>' folder to the `/wp-content/plugins/` directory
 1. Activate '<%= pkg.title %>' through the 'Plugins' menu in WordPress
 
+== Screenshots ==
+
+1. The available settings for this plugin in the settings screen of "The Events Calendar"
+
 == Changelog ==
 
 A more detailed changelog can be [found on GitHub](https://github.com/luehrsenheinrich/yoast-schema-tribe-events/releases).
