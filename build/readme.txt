@@ -22,7 +22,7 @@ to the development of this plugin [on GitHub](https://github.com/luehrsenheinric
 
 ## Features
 
-* Integrates the Event Schema from "The Events Calendar" into the standard of Yoast SEO.
+* Integrates the [Event Schema](https://developers.google.com/search/docs/data-types/event) from "The Events Calendar" into the standard of [Yoast SEO](https://yoast.com/schema-org-is-hard-were-making-it-easy/).
 * Adds the ability to display Event Schema on the frontpage. (See the settings in "The Events Calendar")
 
 == Installation ==
