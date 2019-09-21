@@ -21,6 +21,7 @@ If you are a developer, we encourage you to follow along or
 to the development of this plugin [on GitHub](https://github.com/luehrsenheinrich/yoast-schema-tribe-events).
 
 == Installation ==
+
 ## From within WordPress
 
 1. Visit 'Plugins > Add New'
