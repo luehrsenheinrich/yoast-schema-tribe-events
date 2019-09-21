@@ -22,13 +22,13 @@ to the development of this plugin [on GitHub](https://github.com/luehrsenheinric
 
 == Installation ==
 
-## From within WordPress
+= From within WordPress =
 
 1. Visit 'Plugins > Add New'
 1. Search for '<%= pkg.title %>'
 1. Activate the pluginfrom your Plugins page.
 
-## Manually
+= Manually =
 
 1. Upload the '<%= pkg.slug %>' folder to the `/wp-content/plugins/` directory
 1. Activate '<%= pkg.title %>' through the 'Plugins' menu in WordPress
