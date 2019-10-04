@@ -32,6 +32,9 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 	 */
 	public function __construct( WPSEO_Schema_Context $context ) {
 		$this->context = $context;
+
+		// We might have to modify the webpage schema.
+		add_filter( 'wpseo_schema_webpage', array( $this, 'maybe_transform_webpage' ) );
 	}
 
 	/**
@@ -227,5 +230,20 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		$posts = tribe_get_events( $args );
 
 		return $posts;
+	}
+
+	/**
+	 * Transform the WebPage graph piece on single event views
+	 *
+	 * @param  array $data The WebPage Graph Piece.
+	 *
+	 * @return array       The modified WebPage Graph Piece
+	 */
+	public function maybe_transform_webpage( $data ) {
+		if ( is_singular( 'tribe_events' ) ) {
+			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . '#event' ];
+		}
+
+		return $data;
 	}
 }
