@@ -181,6 +181,20 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 				}
 			}
 
+			// Fix empty organizer/url and wrong organizer/sameAs.
+			if ( $d->organizer->url === false ) {
+				$d->organizer->url = $d->organizer->sameAs;
+			}
+			unset( $d->organizer->sameAs );
+
+			// Unset the performer, as it is currently unused.
+			unset( $d->performer );
+
+			// Fix the offers.
+			foreach ( $d->offers as $key => $offer ) {
+				unset( $d->offers[ $key ]->category );
+			}
+
 			$new_data[ $post_id ] = $d;
 		}
 
