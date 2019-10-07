@@ -60,5 +60,8 @@ If you are using both The Events Calender and Yoast SEO on your WordPress, using
 
 A more detailed changelog can be [found on GitHub](https://github.com/luehrsenheinrich/yoast-schema-tribe-events/releases).
 
+= 1.1.0 =
+* Updated some Schema references to pull the graph tighter together. (thanks @jono-alderson)
+
 = 1.0.0 =
 * Initial release
