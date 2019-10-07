@@ -168,7 +168,7 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 
 			// Transform the post_thumbnail from the url to the @id of #primaryimage.
 			if ( has_post_thumbnail( $post_id ) ) {
-				if ( is_singular() ) {
+				if ( is_singular( 'tribe_events' ) ) {
 					// On a single view we can assume that Yoast SEO already printed the
 					// image schema for the post thumbnail.
 					$d->image = (object) [
