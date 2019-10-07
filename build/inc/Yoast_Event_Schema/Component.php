@@ -10,6 +10,7 @@ use wpmyte\Component_Interface;
 use WPSEO_Graph_Piece;
 use WPSEO_Schema_Context;
 use WPSEO_Schema_Image;
+use WPSEO_Schema_IDs;
 use Tribe__Events__JSON_LD__Event;
 use Tribe__Events__Template__Month;
 use function load_plugin_textdomain;
@@ -32,9 +33,6 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 	 */
 	public function __construct( WPSEO_Schema_Context $context ) {
 		$this->context = $context;
-
-		// We might have to modify the webpage schema.
-		add_filter( 'wpseo_schema_webpage', array( $this, 'maybe_transform_webpage' ) );
 	}
 
 	/**
@@ -106,7 +104,8 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 
 		// If the resulting array only has one entry, print it directly.
 		if ( count( $data ) === 1 ) {
-			$data = $data[0];
+			$data                     = $data[0];
+			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . WPSEO_Schema_IDs::WEBPAGE_HASH ];
 		} elseif ( count( $data ) === 0 ) {
 			$data = false;
 		}
@@ -161,13 +160,15 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		$new_data = array();
 
 		foreach ( $data as $post_id => $d ) {
-
+			/*
+			 * EVENT
+			 */
 			// Generate an @id for the event.
 			$d->{'@id'} = get_permalink( $post_id ) . '#' . strtolower( esc_attr( $d->{'@type'} ) );
 
 			// Transform the post_thumbnail from the url to the @id of #primaryimage.
 			if ( has_post_thumbnail( $post_id ) ) {
-				if ( is_single() && false ) {
+				if ( is_singular() ) {
 					// On a single view we can assume that Yoast SEO already printed the
 					// image schema for the post thumbnail.
 					$d->image = (object) [
@@ -181,18 +182,50 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 				}
 			}
 
-			// Fix empty organizer/url and wrong organizer/sameAs.
-			if ( $d->organizer->url === false ) {
-				$d->organizer->url = $d->organizer->sameAs;
+			if ( isset( $d->description ) && ! empty( $d->description ) ) {
+				// By the time the description arrives in this plugin it is heavily
+				// escaped. That's why we basically pull new text from the database.
+				$d->description = get_the_excerpt( $post_id );
 			}
-			unset( $d->organizer->sameAs );
 
-			// Unset the performer, as it is currently unused.
+			/*
+			 * ORGANIZER
+			 */
+			if ( tribe_has_organizer( $post_id ) ) {
+				$organizer_id              = tribe_get_organizer_id( $post_id );
+				$d->organizer->description = get_the_excerpt( $organizer_id );
+
+				// Fix empty organizer/url and wrong organizer/sameAs.
+				if ( $d->organizer->url === false ) {
+					$d->organizer->url = $d->organizer->sameAs;
+				}
+				unset( $d->organizer->sameAs );
+			}
+
+			/*
+			 * VENUE / LOCATION
+			 */
+			if ( tribe_has_venue( $post_id ) ) {
+				$venue_id                 = tribe_get_venue_id( $post_id );
+				$d->location->description = get_the_excerpt( $venue_id );
+			}
+
+			/*
+			 * PERFORMER
+			 * Unset the performer, as it is currently unused.
+			 * @see: https://github.com/moderntribe/the-events-calendar/blob/5e737eb820c59bb9639d9ee9f4b88931a51c8554/src/Tribe/JSON_LD/Event.php#L151
+			 *
+			 */
 			unset( $d->performer );
 
+			/*
+			 * OFFERS
+			 */
 			// Fix the offers.
-			foreach ( $d->offers as $key => $offer ) {
-				unset( $d->offers[ $key ]->category );
+			if ( isset( $d->offers ) && is_array( $d->offers ) ) {
+				foreach ( $d->offers as $key => $offer ) {
+					unset( $d->offers[ $key ]->category );
+				}
 			}
 
 			$new_data[ $post_id ] = $d;
@@ -244,20 +277,5 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		$posts = tribe_get_events( $args );
 
 		return $posts;
-	}
-
-	/**
-	 * Transform the WebPage graph piece on single event views
-	 *
-	 * @param  array $data The WebPage Graph Piece.
-	 *
-	 * @return array       The modified WebPage Graph Piece
-	 */
-	public function maybe_transform_webpage( $data ) {
-		if ( is_singular( 'tribe_events' ) ) {
-			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . '#event' ];
-		}
-
-		return $data;
 	}
 }
