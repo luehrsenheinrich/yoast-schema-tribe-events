@@ -7,8 +7,10 @@
 
 namespace wpmyte\Yoast_Event_Schema;
 use wpmyte\Component_Interface;
-use \Yoast\WP\SEO\Generators\Schema\Abstract_Schema_Piece;
-use \Yoast\WP\SEO\Config\Schema_IDs;
+use WPSEO_Graph_Piece;
+use WPSEO_Schema_Context;
+use WPSEO_Schema_Image;
+use WPSEO_Schema_IDs;
 use Tribe__Events__JSON_LD__Event;
 use Tribe__Events__Template__Month;
 use function load_plugin_textdomain;
@@ -16,20 +18,22 @@ use function load_plugin_textdomain;
 /**
  * A class to handle textdomains and other Yoast Event Schema related logic..
  */
-class Component extends Abstract_Schema_Piece implements Component_Interface {
+class Component implements Component_Interface, WPSEO_Graph_Piece {
 	/**
-	 * The meta tags context.
+	 * A value object with context variables.
 	 *
-	 * @var Meta_Tags_Context
+	 * @var WPSEO_Schema_Context
 	 */
-	public $context;
+	private $context;
 
 	/**
-	 * The helpers surface
+	 * Schema_Event constructor.
 	 *
-	 * @var Helpers_Surface
+	 * @param WPSEO_Schema_Context $context Value object with context variables.
 	 */
-	public $helpers;
+	public function __construct( WPSEO_Schema_Context $context ) {
+		$this->context = $context;
+	}
 
 	/**
 	 * Gets the unique identifier for the plugin component.
@@ -101,7 +105,7 @@ class Component extends Abstract_Schema_Piece implements Component_Interface {
 		// If the resulting array only has one entry, print it directly.
 		if ( count( $data ) === 1 ) {
 			$data                     = $data[0];
-			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . Schema_IDs::WEBPAGE_HASH ];
+			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . WPSEO_Schema_IDs::WEBPAGE_HASH ];
 		} elseif ( count( $data ) === 0 ) {
 			$data = false;
 		}
@@ -171,9 +175,10 @@ class Component extends Abstract_Schema_Piece implements Component_Interface {
 						'@id' => get_permalink( $post_id ) . '#primaryimage',
 					];
 				} else {
-					$image_id  = get_post_thumbnail_id( $post_id );
-					$schema_id = get_permalink( $post_id ) . '#primaryimage';
-					$d->image  = $this->helpers->schema->image->generate_from_attachment_id( $schema_id, $image_id );
+					$image_id     = get_post_thumbnail_id( $post_id );
+					$schema_id    = get_permalink( $post_id ) . '#primaryimage';
+					$schema_image = new WPSEO_Schema_Image( $schema_id );
+					$d->image     = $schema_image->generate_from_attachment_id( $image_id );
 				}
 			}
 
