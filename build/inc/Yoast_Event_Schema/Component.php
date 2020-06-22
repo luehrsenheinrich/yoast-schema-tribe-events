@@ -7,10 +7,8 @@
 
 namespace wpmyte\Yoast_Event_Schema;
 use wpmyte\Component_Interface;
-use WPSEO_Graph_Piece;
-use WPSEO_Schema_Context;
-use WPSEO_Schema_Image;
-use WPSEO_Schema_IDs;
+use \Yoast\WP\SEO\Generators\Schema\Abstract_Schema_Piece;
+use \Yoast\WP\SEO\Config\Schema_IDs;
 use Tribe__Events__JSON_LD__Event;
 use Tribe__Events__Template__Month;
 use function load_plugin_textdomain;
@@ -18,22 +16,20 @@ use function load_plugin_textdomain;
 /**
  * A class to handle textdomains and other Yoast Event Schema related logic..
  */
-class Component implements Component_Interface, WPSEO_Graph_Piece {
+class Component extends Abstract_Schema_Piece implements Component_Interface {
 	/**
-	 * A value object with context variables.
+	 * The meta tags context.
 	 *
-	 * @var WPSEO_Schema_Context
+	 * @var Meta_Tags_Context
 	 */
-	private $context;
+	public $context;
 
 	/**
-	 * Schema_Event constructor.
+	 * The helpers surface
 	 *
-	 * @param WPSEO_Schema_Context $context Value object with context variables.
+	 * @var Helpers_Surface
 	 */
-	public function __construct( WPSEO_Schema_Context $context ) {
-		$this->context = $context;
-	}
+	public $helpers;
 
 	/**
 	 * Gets the unique identifier for the plugin component.
@@ -105,7 +101,7 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 		// If the resulting array only has one entry, print it directly.
 		if ( count( $data ) === 1 ) {
 			$data                     = $data[0];
-			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . WPSEO_Schema_IDs::WEBPAGE_HASH ];
+			$data['mainEntityOfPage'] = [ '@id' => $this->context->canonical . Schema_IDs::WEBPAGE_HASH ];
 		} elseif ( count( $data ) === 0 ) {
 			$data = false;
 		}
@@ -175,10 +171,9 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 						'@id' => get_permalink( $post_id ) . '#primaryimage',
 					];
 				} else {
-					$image_id     = get_post_thumbnail_id( $post_id );
-					$schema_id    = get_permalink( $post_id ) . '#primaryimage';
-					$schema_image = new WPSEO_Schema_Image( $schema_id );
-					$d->image     = $schema_image->generate_from_attachment_id( $image_id );
+					$image_id  = get_post_thumbnail_id( $post_id );
+					$schema_id = get_permalink( $post_id ) . '#primaryimage';
+					$d->image  = $this->helpers->schema->image->generate_from_attachment_id( $schema_id, $image_id );
 				}
 			}
 
@@ -192,11 +187,15 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 			 * ORGANIZER
 			 */
 			if ( tribe_has_organizer( $post_id ) ) {
+				if ( ! $d->organizer ) {
+					$d->organizer = new \stdClass();
+				}
+
 				$organizer_id              = tribe_get_organizer_id( $post_id );
 				$d->organizer->description = get_the_excerpt( $organizer_id );
 
 				// Fix empty organizer/url and wrong organizer/sameAs.
-				if ( $d->organizer->url === false ) {
+				if ( isset( $d->organizer->sameAs ) && $d->organizer->url === false ) {
 					$d->organizer->url = $d->organizer->sameAs;
 				}
 				unset( $d->organizer->sameAs );
@@ -206,6 +205,10 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 			 * VENUE / LOCATION
 			 */
 			if ( tribe_has_venue( $post_id ) ) {
+				if ( ! $d->location ) {
+					$d->location = new \stdClass();
+				}
+
 				$venue_id                 = tribe_get_venue_id( $post_id );
 				$d->location->description = get_the_excerpt( $venue_id );
 			}
@@ -214,7 +217,6 @@ class Component implements Component_Interface, WPSEO_Graph_Piece {
 			 * PERFORMER
 			 * Unset the performer, as it is currently unused.
 			 * @see: https://github.com/moderntribe/the-events-calendar/blob/5e737eb820c59bb9639d9ee9f4b88931a51c8554/src/Tribe/JSON_LD/Event.php#L151
-			 *
 			 */
 			unset( $d->performer );
 
