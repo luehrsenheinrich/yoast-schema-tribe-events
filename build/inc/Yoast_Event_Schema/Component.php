@@ -187,11 +187,15 @@ class Component extends Abstract_Schema_Piece implements Component_Interface {
 			 * ORGANIZER
 			 */
 			if ( tribe_has_organizer( $post_id ) ) {
+				if ( ! $d->organizer ) {
+					$d->organizer = new \stdClass();
+				}
+
 				$organizer_id              = tribe_get_organizer_id( $post_id );
 				$d->organizer->description = get_the_excerpt( $organizer_id );
 
 				// Fix empty organizer/url and wrong organizer/sameAs.
-				if ( $d->organizer->url === false ) {
+				if ( isset( $d->organizer->sameAs ) && $d->organizer->url === false ) {
 					$d->organizer->url = $d->organizer->sameAs;
 				}
 				unset( $d->organizer->sameAs );
@@ -201,6 +205,10 @@ class Component extends Abstract_Schema_Piece implements Component_Interface {
 			 * VENUE / LOCATION
 			 */
 			if ( tribe_has_venue( $post_id ) ) {
+				if ( ! $d->location ) {
+					$d->location = new \stdClass();
+				}
+
 				$venue_id                 = tribe_get_venue_id( $post_id );
 				$d->location->description = get_the_excerpt( $venue_id );
 			}
@@ -209,7 +217,6 @@ class Component extends Abstract_Schema_Piece implements Component_Interface {
 			 * PERFORMER
 			 * Unset the performer, as it is currently unused.
 			 * @see: https://github.com/moderntribe/the-events-calendar/blob/5e737eb820c59bb9639d9ee9f4b88931a51c8554/src/Tribe/JSON_LD/Event.php#L151
-			 *
 			 */
 			unset( $d->performer );
 
