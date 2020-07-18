@@ -51,7 +51,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "prompt": "^1.0.0",
     "replace-in-file": "^4.3.1"
   },
